@@ -6,8 +6,9 @@
     <style>
         body { margin: 0; background: black; overflow: hidden; }
         #initial-view { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: black; z-index: 100; }
-        #text-msg { color: #0f0; font-size: 2.5em; text-align: center; margin-bottom: 20px; font-family: sans-serif; }
+        #text-msg { color: #0f0; font-size: 2em; text-align: center; margin-bottom: 20px; font-family: sans-serif; line-height: 1.6; }
         #img-large { width: 80vw; max-width: 400px; border: 2px solid white; }
+        
         #grid-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); z-index: 50; }
         .grid-item { width: 100%; height: 100%; background-image: url('https://i.ibb.co/TqbRD8DB/1786299456735.png'); background-size: cover; opacity: 0; transition: opacity 0.5s; }
     </style>
@@ -15,22 +16,36 @@
 <body>
 
     <div id="initial-view">
-        <div id="text-msg">أنت غبي يا صديقي<br>هاتفك احمق</div>
+        <div id="text-msg">
+            انت غبي يا صديقي<br>
+            وحتا هاتفك سار احمقا<br>
+            انستغرام: AYOUB Anarchy<br>
+            يوتيوب: Ayoub Anarchy
+        </div>
         <img id="img-large" src="https://i.ibb.co/TqbRD8DB/1786299456735.png">
     </div>
 
     <div id="grid-container"></div>
 
     <script>
+        // العرض الأول لمدة 4 ثواني
         setTimeout(function() {
             document.getElementById('initial-view').style.display = 'none';
             var container = document.getElementById('grid-container');
+            var items = [];
+            
+            // إنشاء 25 مربع
             for(var i=0; i<25; i++) {
                 var div = document.createElement('div');
                 div.className = 'grid-item';
                 container.appendChild(div);
+                items.push(div);
             }
-            var items = document.querySelectorAll('.grid-item');
+
+            // ترتيب المربعات عشوائياً
+            items.sort(function() { return 0.5 - Math.random() });
+
+            // إظهار المربعات عشوائياً بالتتابع على مدار 10 ثواني
             var idx = 0;
             var interval = setInterval(function() {
                 if(idx < items.length) {
@@ -39,8 +54,8 @@
                 } else {
                     clearInterval(interval);
                 }
-            }, 400); // تظهر الصور بالتتابع لتملأ الشاشة في 10 ثواني
-        }, 2000);
+            }, 400); // 10 ثواني / 25 مربع = 400 ميلي ثانية لكل مربع
+        }, 4000); // 4000 تعني 4 ثواني للعرض الأول
     </script>
 </body>
 </html>
