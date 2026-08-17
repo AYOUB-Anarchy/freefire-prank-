@@ -15,14 +15,13 @@
             height: 100%;
             overflow: hidden;
             background-color: black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        /* حاوية عامة للشاشة */
-        #prank-container {
-            position: relative;
+        /* حاوية العرض الأولية */
+        #initial-box {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
             display: flex;
@@ -30,7 +29,7 @@
             align-items: center;
             justify-content: center;
             background-color: black;
-            z-index: 999;
+            z-index: 9999;
         }
 
         /* تنسيق النص التحذيري */
@@ -45,63 +44,97 @@
             text-align: center;
             border: 2px solid #00ff55;
             box-shadow: 0 0 15px rgba(0, 255, 85, 0.5);
-            z-index: 1000;
         }
 
-        /* تنسيق صورتك الشخصية */
-        #prank-image {
+        /* الصورة الأولى الكبيرة */
+        #initial-img {
             width: 70vw;
             max-width: 350px;
             height: auto;
-            border-radius: 0; /* شكل مربع تماماً */
             border: 3px solid white;
             object-fit: cover;
-            transition: all 0.5s ease;
+        }
+
+        /* حاوية شبكة التكاثر (النسخ المتعدد) */
+        #clone-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            flex-wrap: wrap;
+            background-color: black;
+            z-index: 8888;
+        }
+
+        /* شكل الصورة المصغرة المربعة المنسوخة */
+        .cloned-img {
+            width: 10%; /* حجم المربع الواحد بالنسبة للشاشة */
+            height: 10vh;
+            object-fit: cover;
+            border: 1px solid #222;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="prank-container">
+    <!-- المرحلة الأولى: النص والصورة الكبيرة -->
+    <div id="initial-box">
         <div id="prank-text">أنت غبي يا صديقي<br>هاتفك احمق</div>
-        <img id="prank-image" src="https://i.ibb.co/TqbRD8DB/1786299456735.png" alt="Ayoub Anarchy">
+        <img id="initial-img" src="https://i.ibb.co/TqbRD8DB/1786299456735.png" alt="Ayoub Anarchy">
     </div>
+
+    <!-- المرحلة الثانية: شبكة الصور المتكاثرة -->
+    <div id="clone-grid"></div>
 
     <script>
         window.onload = function() {
-            var container = document.getElementById('prank-container');
-            var txt = document.getElementById('prank-text');
-            var img = document.getElementById('prank-image');
+            var initialBox = document.getElementById('initial-box');
+            var cloneGrid = document.getElementById('clone-grid');
 
-            // المرحلة الأولى: يظهر الكلام والصورة لمدة ثانيتين (2000 ملي ثانية)
+            // بعد ثانيتين (2000 ملي ثانية) يختفي العرض الأول ويبدأ التكاثر
             setTimeout(function() {
-                // إخفاء النص
-                txt.style.display = 'none';
+                initialBox.style.display = 'none';
+                cloneGrid.style.display = 'flex';
 
-                // تصغير الصورة لتصبح مربعة في المنتصف تماماً
-                img.style.width = '120px';
-                img.style.height = '120px';
-                img.style.position = 'absolute';
-                
-                // جعل الصورة تتمدد ببطء وسلاسة لتملأ الشاشة بالكامل خلال 10 ثوانٍ
-                img.style.transition = 'width 10s ease, height 10s ease';
-                
-                // أمر بدء التمدد ليصبح حجمها يملأ الشاشة
-                setTimeout(function() {
-                    img.style.width = '100vw';
-                    img.style.height = '100vh';
-                    img.style.maxWidth = 'none';
-                    img.style.borderRadius = '0';
-                    img.style.border = 'none';
-                }, 50);
+                // حساب عدد المربعات المطلوبة لملء الشاشة بالكامل
+                // 10 أعمدة × 10 أسطر = 100 صورة مربعة متكاثرة
+                var totalImages = 100;
+                var images = [];
 
-                // إخفاء كل شيء بعد انتهاء مدة التمدد (10 ثوانٍ)
-                setTimeout(function() {
-                    container.style.display = 'none';
-                }, 10000);
+                for (var i = 0; i < totalImages; i++) {
+                    var img = document.createElement('img');
+                    img.src = 'https://i.ibb.co/TqbRD8DB/1786299456735.png';
+                    img.className = 'cloned-img';
+                    cloneGrid.appendChild(img);
+                    images.push(img);
+                }
 
-            }, 2000); // 2000 ملي ثانية (ثانيتان للعرض الثابت الأول)
+                // عملية التكاثر التمهيدية (تظهر صورة تلو الأخرى بانتظام على مدار 10 ثوانٍ)
+                var index = 0;
+                var intervalTime = 10000 / totalImages; // توزيع الـ 10 ثوانٍ على جميع الصور
+
+                var multiplying = setInterval(function() {
+                    if (index < images.length) {
+                        images[index].style.opacity = '1';
+                        images[index].style.transform = 'scale(1)';
+                        index++;
+                    } else {
+                        clearInterval(multiplying);
+                        // إخفاء كل شيء بعد انتهاء العملية بالكامل
+                        setTimeout(function() {
+                            cloneGrid.style.display = 'none';
+                        }, 1000);
+                    }
+                }, intervalTime);
+
+            }, 2000); // 2 ثانية لعرض النص والصورة الثابتة في البداية
         };
     </script>
 </body>
