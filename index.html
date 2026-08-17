@@ -15,13 +15,14 @@
             height: 100%;
             overflow: hidden;
             background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* حاوية تجمع الصورة والنص في البداية */
-        #prank-box {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* حاوية عامة للشاشة */
+        #prank-container {
+            position: relative;
             width: 100vw;
             height: 100vh;
             display: flex;
@@ -50,80 +51,57 @@
         /* تنسيق صورتك الشخصية */
         #prank-image {
             width: 70vw;
-            max-width: 400px;
+            max-width: 350px;
             height: auto;
-            border-radius: 10px;
+            border-radius: 0; /* شكل مربع تماماً */
             border: 3px solid white;
             object-fit: cover;
+            transition: all 0.5s ease;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="prank-box">
+    <div id="prank-container">
         <div id="prank-text">أنت غبي يا صديقي<br>هاتفك احمق</div>
         <img id="prank-image" src="https://i.ibb.co/TqbRD8DB/1786299456735.png" alt="Ayoub Anarchy">
     </div>
 
     <script>
         window.onload = function() {
-            var box = document.getElementById('prank-box');
+            var container = document.getElementById('prank-container');
             var txt = document.getElementById('prank-text');
             var img = document.getElementById('prank-image');
 
-            // المرحلة الأولى: يظهر الكلام والصورة معاً لمدة ثانيتين (2000 ملي ثانية)
+            // المرحلة الأولى: يظهر الكلام والصورة لمدة ثانيتين (2000 ملي ثانية)
             setTimeout(function() {
                 // إخفاء النص
                 txt.style.display = 'none';
 
-                // تحويل الحاوية إلى شكل صغير لتحريكه
-                box.style.width = '120px';
-                box.style.height = '120px';
-                box.style.justifyContent = 'flex-start';
-                box.style.alignItems = 'flex-start';
-                box.style.background = 'transparent';
-
-                // تصغير الصورة لتناسب الحجم المتحرك
+                // تصغير الصورة لتصبح مربعة في المنتصف تماماً
                 img.style.width = '120px';
                 img.style.height = '120px';
-                img.style.borderRadius = '50%'; // جعلها دائرية أثناء الحركة أو اذفها إذا أردتها مربعة
-                img.style.border = '3px solid #00ff55';
-
-                // إحداثيات وسرعة الحركة في الاتجاهات الأربعة
-                var posX = window.innerWidth / 2 - 60;
-                var posY = window.innerHeight / 2 - 60;
-                var speedX = 8;
-                var speedY = 8;
-
-                box.style.left = posX + 'px';
-                box.style.top = posY + 'px';
-
-                // حلقة تحريك الصورة في الشاشة لمدة 4 ثوانٍ
-                var moveInterval = setInterval(function() {
-                    posX += speedX;
-                    posY += speedY;
-
-                    // الارتطام باليمين أو اليسار
-                    if (posX + 120 >= window.innerWidth || posX <= 0) {
-                        speedX = -speedX;
-                    }
-                    // الارتطام بالأعلى أو الأسفل
-                    if (posY + 120 >= window.innerHeight || posY <= 0) {
-                        speedY = -speedY;
-                    }
-
-                    box.style.left = posX + 'px';
-                    box.style.top = posY + 'px';
-                }, 25);
-
-                // المرحلة الثالثة: إيقاف الحركة وإخفاء كل شيء بعد 4 ثوانٍ من بدء الحركة
+                img.style.position = 'absolute';
+                
+                // جعل الصورة تتمدد ببطء وسلاسة لتملأ الشاشة بالكامل خلال 10 ثوانٍ
+                img.style.transition = 'width 10s ease, height 10s ease';
+                
+                // أمر بدء التمدد ليصبح حجمها يملأ الشاشة
                 setTimeout(function() {
-                    clearInterval(moveInterval);
-                    box.style.display = 'none';
-                }, 4000);
+                    img.style.width = '100vw';
+                    img.style.height = '100vh';
+                    img.style.maxWidth = 'none';
+                    img.style.borderRadius = '0';
+                    img.style.border = 'none';
+                }, 50);
 
-            }, 2000); // 2000 تعني ثانيتين العرض الثابت الأول
+                // إخفاء كل شيء بعد انتهاء مدة التمدد (10 ثوانٍ)
+                setTimeout(function() {
+                    container.style.display = 'none';
+                }, 10000);
+
+            }, 2000); // 2000 ملي ثانية (ثانيتان للعرض الثابت الأول)
         };
     </script>
 </body>
